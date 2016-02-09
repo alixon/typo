@@ -5,7 +5,7 @@ Feature: Write Articles
   
   Background:
     Given the blog is set up
-    And I am logged into the admin page
+    And I am logged into the admin panel
     
     
   Scenario:
