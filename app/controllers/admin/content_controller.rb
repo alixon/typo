@@ -163,17 +163,29 @@ class Admin::ContentController < Admin::BaseController
     @article.published_at = DateTime.strptime(params[:article][:published_at], "%B %e, %Y %I:%M %p GMT%z").utc rescue Time.parse(params[:article][:published_at]).utc rescue nil
 
     if request.post?
-      set_article_author
-      save_attachments
-      
-      @article.state = "draft" if @article.draft
-
-      if @article.save
-        destroy_the_draft unless @article.draft
-        set_article_categories
-        set_the_flash
-        redirect_to :action => 'index'
+      if params[:merge_with] && !(params[:merge_with].empty?) && current_user.profile.label == "admin"
+        other_article = Article.find_by_id(params[:merge_with])
+          if other_article
+            merged_article = @article.merge_with(other_article)
+            redirect_to "/admin/content/edit/#{merged_article.id}"
+          else
+            flash[:notice] = "Article to merge doesn't exist."
+            redirect_to :action => 'index'
+          end
         return
+      else
+        set_article_author
+        save_attachments
+        
+        @article.state = "draft" if @article.draft
+  
+        if @article.save
+          destroy_the_draft unless @article.draft
+          set_article_categories
+          set_the_flash
+          redirect_to :action => 'index'
+          return
+        end
       end
     end
 
