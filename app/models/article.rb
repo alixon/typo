@@ -70,6 +70,27 @@ class Article < Content
       self.settings = {}
     end
   end
+  
+  def merge_with(other_article)
+    return false if self == other_article
+    
+    merged_article = Article.create!(
+      title: self.title,
+      body: self.body + other_article.body,
+      author: self.author,
+      state: :published,
+      user_id: self.user_id
+    )
+    
+    [self, other_article].each do |article|
+      article.comments.each { |c| c.article_id = merged_article.id; c.save! }
+      article.comments(force_reload = true)
+      article.destroy
+    end
+    
+    merged_article
+  
+  end
 
   def set_permalink
     return if self.state == 'draft'

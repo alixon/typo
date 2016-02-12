@@ -21,6 +21,8 @@ module NavigationHelpers
       '/admin'
     when /^the new categories page$/
       '/admin/categories/new'
+    when /^the article edit page for "(.*)"$/
+      "/admin/content/edit/#{Article.where(title: $1).first.id}"
       
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

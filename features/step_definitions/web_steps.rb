@@ -43,6 +43,11 @@ Given /^the blog is set up$/ do
                 :state => 'active'})
 end
 
+
+And /^The following articles exists$/ do |table|
+  Article.create! table.hashes
+end
+
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
   fill_in 'user_login', :with => 'admin'
